@@ -4,6 +4,7 @@
 #include "led.h"
 #include "delay.h"
 #include "remote.h"
+#include "key.h"
 #include <stdio.h> //为了使用sprintf函数
 
 
@@ -19,7 +20,8 @@ int main(void)
 {  	
 
 	 u8 t;
-	 u8 key; 
+	 u8 key;
+	 u8 isDebug=0; //选择是否将红外脉冲的信息打印到串口
 	 u8 buffer[17];
 	
 	/* 初始化USART */
@@ -28,6 +30,7 @@ int main(void)
 	 delay_init();
 	 LED_Init();
 
+	 KEY_Init();
 	 Remote_Init();	//红外接收初始化
 	
 	 GPIO_Init_12864();
@@ -39,25 +42,50 @@ int main(void)
 	
 	
 	WriteEn(0,0,(u8*)"Key Value:");		//显示键值
-	WriteEn(0,2,(u8*)"Long Press:");	//显示按键次数	
+	WriteEn(0,2,(u8*)"Long Press:");	//显示按键次数
+	
 	
 	 while(1)
 	{
 		
-		
-		Remote_Debug();  //打印脉冲信息到串口
-		key=  Remote_Scan();		
-		if(key>0)
+		key=KEY_Scan(0); //此函数里面延时10mS
+		if(key==KEY0_PRES)
 		{
-			sprintf((char*)buffer, "Key Value: 0x%02X", key);
-			WriteEn(0,0,buffer);	//显示键值
+			if(isDebug)
+				isDebug=0;
+			else
+				isDebug=1;
 		}
-		else
-			delay_ms(10);
+			
 		
+		if(isDebug)  //打印脉冲信息到串口	
+		{
+			WriteEn(0,4,(u8*)"Press Key0 to display here");	//显示按键次数
+			Remote_Debug();  		
+		}
+		else  //码值显示在12864上
+		{
+			WriteEn(0,4,(u8*)"Press Key0 print to UART  ");	//显示按键次数	
+			
+			key=  Remote_Scan();		
+			if(key>0)
+			{
+				sprintf((char*)buffer,     "Key  Value: 0x%02X", key);
+				WriteEn(0,0,buffer);	//显示键值
+				while(KeyPressInfo.isPressing)
+				{
+					sprintf((char*)buffer, "Long Press: %3d", KeyPressInfo.nLongPress);
+					WriteEn(0,2,buffer);	//显示键值
+				}
+				
+			}
+			else
+				delay_ms(10);
+		}
+	
 		
 		t++;
-		if(t%100==0)
+		if(t%50==0)
 		{
 			LED0=!LED0;
 			LED1=!LED1;

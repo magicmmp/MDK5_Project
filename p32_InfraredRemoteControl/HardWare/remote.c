@@ -1,6 +1,5 @@
 #include "remote.h"
-#include "delay.h"
-#include "bsp_usart.h"
+#include "bsp_usart.h" //串口用于打印信息
 
 
 
@@ -136,7 +135,7 @@ u8 Remote_Scan(void)
 
 //static修饰的变量只能本文件内使用
 static uint8_t  Polarity_index=0;  //捕获边沿设置，下降沿0或上升沿1	
-static uint16_t PolaritySelect[2]={TIM_ICPolarity_Falling,TIM_ICPolarity_Rising};
+const  uint16_t PolaritySelect[2]={TIM_ICPolarity_Falling,TIM_ICPolarity_Rising};
 static uint16_t HighTime[200];//用于记录脉冲的高电平的时长，单位为10uS
 static uint16_t LowTime[200]; //用于记录脉冲的低电平的时长，单位为10uS
 static uint16_t tmpHigh;//存放高电平时间的临时变量
