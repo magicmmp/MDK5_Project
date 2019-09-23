@@ -39,7 +39,7 @@ typedef struct
 	uint8_t    valid;        //收到有效按键信息后变有效。访问后应手动设为无效
 	uint8_t    isPressing;   // 按键正在被按下，收到同步头置1，松开120mS后为0
 	uint16_t   nPulse;       //总共收到几个脉冲
-	uint16_t   nLongPress;   //计算长按的时间
+	uint16_t   nLongPress;   //计算长按的时间,长按会使该值不断增大
 	uint32_t   code;         //按键编码。4字节，由高字节到低字节：遥控器地址+地址反码+命令+命令反码
 }KeyPressInfoTypeDef;
 
@@ -50,7 +50,7 @@ extern KeyPressInfoTypeDef KeyPressInfo ;
 
 void      Remote_Init(void);    	//红外传感器接收头引脚初始化
 uint8_t   Remote_Scan(void);       //遥控器键盘扫描
-
+void 	  Remote_Debug(void);
 #endif
 
 

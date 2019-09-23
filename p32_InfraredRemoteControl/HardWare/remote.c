@@ -156,13 +156,13 @@ void GENERAL_TIM_INT_FUN(void)
 		if(Polarity_index) //如果现在捕获的是上升沿
 		{
 			Polarity_index=0;
-			tmpLow=GENERAL_TIM_GetCapturex_FUN (GENERAL_TIM);//得到低电平时间
+			tmpLow=GENERAL_TIM_GetCapturex_FUN (GENERAL_TIM);//先将低电平时间保存好
 			
 		}
 		else
 		{
 			Polarity_index=1;
-			tmpHigh=GENERAL_TIM_GetCapturex_FUN (GENERAL_TIM);//得到高电平时间
+			tmpHigh=GENERAL_TIM_GetCapturex_FUN (GENERAL_TIM);//先将高电平时间保存好
 			if(tmpLow>850 && tmpLow<950)
 			if(tmpHigh>400 && tmpHigh<500) //收到 同步码头
 			{
@@ -188,7 +188,7 @@ void GENERAL_TIM_INT_FUN(void)
 				
 				if(KeyPressInfo.nPulse>34)  //长按计时
 				{
-					KeyPressInfo.nLongPress=(KeyPressInfo.nPulse-34)>>1;
+					KeyPressInfo.nLongPress=(KeyPressInfo.nPulse-33)>>1;
 				}
 				KeyPressInfo.nPulse++; //脉冲数加1
 			}			
