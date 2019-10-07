@@ -17,8 +17,7 @@
 //LED IO初始化
 void LED_Init(void)
 {
- 
- GPIO_InitTypeDef  GPIO_InitStructure;
+	GPIO_InitTypeDef  GPIO_InitStructure;
 
 #ifdef TaoBao_STM32_Board_2014  //如果是淘宝2014年买的那块板
 
