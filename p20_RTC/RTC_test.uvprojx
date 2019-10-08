@@ -464,29 +464,14 @@
               <FilePath>.\HardWare\key.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_calendar.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\HardWare\bsp_calendar.h</FilePath>
+              <FileName>pg12864.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HardWare\pg12864.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_date.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\HardWare\bsp_date.h</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_rtc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\HardWare\bsp_rtc.h</FilePath>
-            </File>
-            <File>
-              <FileName>fonts.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\HardWare\fonts.h</FilePath>
-            </File>
-            <File>
-              <FileName>key.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\HardWare\key.h</FilePath>
+              <FileName>remote.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HardWare\remote.c</FilePath>
             </File>
           </Files>
         </Group>

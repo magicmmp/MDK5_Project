@@ -35,7 +35,7 @@ void RTC_Configuration(void);
 void Time_Regulate_Get(struct rtc_time *tm);
 void Time_Adjust(struct rtc_time *tm);
 void Time_Display(uint32_t TimeVar,struct rtc_time *tm);
-void Time_Show(struct rtc_time *tm);
+//void Time_Show(struct rtc_time *tm);
 static uint8_t USART_Scanf(uint32_t value);
 void RTC_CheckAndConfig(struct rtc_time *tm);
 

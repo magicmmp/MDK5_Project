@@ -419,28 +419,6 @@ void Time_Regulate_Get(struct rtc_time *tm)
 
 }
 
-/*
- * 函数名：Time_Show
- * 描述  ：显示当前时间值
- * 输入  ：无
- * 输出  ：无
- * 调用  ：外部调用
- */ 
-void Time_Show(struct rtc_time *tm)
-{	 
-	  /* Infinite loop */
-	  while (1)
-	  {
-	    /* 每过1s */
-	    if (TimeDisplay == 1)
-	    {
-				/* Display current time */
-	      Time_Display( RTC_GetCounter(),tm); 		  
-	      TimeDisplay = 0;
-	    }
-	  }
-}
-
 
 /*
  * 函数名：Time_Adjust
@@ -467,50 +445,3 @@ void Time_Adjust(struct rtc_time *tm)
 	  /* 等待确保上一次操作完成 */
 	  RTC_WaitForLastTask();
 }
-
-/*
- * 函数名：Time_Display
- * 描述  ：显示当前时间值
- * 输入  ：-TimeVar RTC计数值，单位为 s
- * 输出  ：无
- * 调用  ：内部调用
- */	
-void Time_Display(uint32_t TimeVar,struct rtc_time *tm)
-{
-	   static uint32_t FirstDisplay = 1;
-	   uint32_t BJ_TimeVar;
-	   uint8_t str[200]; // 字符串暂存  	
-
-	   /*  把标准时间转换为北京时间*/
-	   BJ_TimeVar =TimeVar + TIME_ZOOM;
-
-	   to_tm(BJ_TimeVar, tm);/*把定时器的值转换为北京时间*/	
-	
-	  if((!tm->tm_hour && !tm->tm_min && !tm->tm_sec)  || (FirstDisplay))
-	  {
-	      
-	      GetChinaCalendar((u16)tm->tm_year, (u8)tm->tm_mon, (u8)tm->tm_mday, str);	
-					printf("\r\n 今天新历：%0.2d%0.2d,%0.2d,%0.2d", str[0], str[1], str[2],  str[3]);
-	
-	      GetChinaCalendarStr((u16)tm->tm_year,(u8)tm->tm_mon,(u8)tm->tm_mday,str);
-					printf("\r\n 今天农历：%s\r\n", str);
-	
-	     if(GetJieQiStr((u16)tm->tm_year, (u8)tm->tm_mon, (u8)tm->tm_mday, str))
-					printf("\r\n 今天农历：%s\r\n", str);
-	
-	      FirstDisplay = 0;
-	  }	 	  	
-
-	  /* 输出时间戳，公历时间 */
-	  printf(" \r\n\r\nUNIX时间戳 = %d 当前时间为: %d年(%s年) %d月 %d日 (星期%s)  %0.2d:%0.2d:%0.2d\r",TimeVar,
-	                    tm->tm_year, zodiac_sign[(tm->tm_year-3)%12], tm->tm_mon, tm->tm_mday, 
-	                    WEEK_STR[tm->tm_wday], tm->tm_hour, 
-	                    tm->tm_min, tm->tm_sec);
-		
-		
-}
-
-
-
-
-/************************END OF FILE***************************************/
