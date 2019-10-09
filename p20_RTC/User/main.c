@@ -36,6 +36,8 @@ const u8  Status_SetHour = 4;
 const u8  Status_SetMin  = 5;
 const u8  Status_SetSec  = 6;
 
+const char StatusBuffer[7][10]={"电子日历","设置年","设置月","设置日","设置时","设置分","设置秒"};
+
 const u8 KEY_0=0xB2;
 const u8 KEY_1=0x42;
 const u8 KEY_2=0x82;
@@ -71,6 +73,7 @@ struct rtc_time systmtime=
 0,30,8,7,10,2019,1
 };
 
+extern char const *WEEK_STR[];
 extern __IO uint32_t TimeDisplay ;
 
 /**
@@ -137,10 +140,17 @@ void DisplayTimeOn_12864(struct rtc_time *tm,u8* buffer,u8 key)
 {
 	//sprintf((char*)buffer, "2019年06月08日");
 	//sprintf((char*)buffer, "23:12:30");
-	sprintf((char*)buffer, "kn=%d,key=0x%02X",status,key);
+	sprintf((char*)buffer, "%02X",key);
 	WriteEn(status,0,0,(u8*)buffer);
+	WriteCn(status,16,0,(u8*)StatusBuffer[status]);
+	if(status)
+	{
+		sprintf((char*)buffer, "  ");
+		WriteEn(status,64,0,(u8*)buffer);
+	}
+		
 	
-	sprintf((char*)buffer, "%4d",tm->tm_year);
+	 sprintf((char*)buffer, "%4d",tm->tm_year);
 	WriteEn(status,8,2,(u8*)buffer);
 	WriteCn(status,8+8*4,2,(u8*)"年");
 	sprintf((char*)buffer, "%2d",tm->tm_mon);
@@ -149,7 +159,14 @@ void DisplayTimeOn_12864(struct rtc_time *tm,u8* buffer,u8 key)
 	sprintf((char*)buffer, "%2d",tm->tm_mday);
 	WriteEn(status,8+8*10,2,(u8*)buffer);
 	WriteCn(status,8+8*12,2,(u8*)"日");
-	//16,16+5*8,16+10*8,
+	
+	/*
+	 * Determine the day of week
+	 */
+	GregorianDay(tm);
+	sprintf((char*)buffer, "星期%s",WEEK_STR[tm->tm_wday]);
+	WriteCn(status,80,4,(u8*)buffer);
+	
 	sprintf((char*)buffer, "%2d:%02d:%02d",tm->tm_hour,tm->tm_min,tm->tm_sec);
 	WriteEn(status,0,6,(u8*)buffer);	
 }
