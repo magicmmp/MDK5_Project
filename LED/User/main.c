@@ -3,15 +3,17 @@
 
  void Delay(u32 count)
  {
-	   u32 i=0;
+	   u32 i=0;                         
 	   for(;i<count;i++);
+     
+    
  }
  
 
  //运行在淘宝2014买的那块stm32板
  int main(void)
  {  	
-              
+									
 	  GPIO_InitTypeDef  GPIO_InitStructure;
                     
 	 

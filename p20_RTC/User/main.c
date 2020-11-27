@@ -1,24 +1,8 @@
-/**
-  ******************************************************************************
-  * @file    main.c
-  * @author  fire
-  * @version V1.0
-  * @date    2013-xx-xx
-  * @brief   rtc 测试，显示时间格式为: xx:xx:xx
-  ******************************************************************************
-  * @attention
-  *
-  * 实验平台:野火 F103-霸道 STM32 开发板 
-  * 论坛    :http://www.firebbs.cn
-  * 淘宝    :https://fire-stm32.taobao.com
-  *
-  ******************************************************************************
-  */
 	
 #include "stm32f10x.h"
 #include "usart.h"
 #include "key.h"
-#include "delay.h"
+#include "led.h"
 #include "sys.h"
 #include "bsp_rtc.h"
 #include "pg12864.h"
@@ -38,6 +22,8 @@ const u8  Status_SetSec  = 6;
 
 const char StatusBuffer[7][10]={"电子日历","设置年","设置月","设置日","设置时","设置分","设置秒"};
 
+
+/**
 const u8 KEY_0=0xB2;
 const u8 KEY_1=0x42;
 const u8 KEY_2=0x82;
@@ -55,6 +41,24 @@ const u8 KEY_right=0x88;
 const u8 KEY_OK=0xA8;
 const u8 KEY_EXIT=0x38;
 const u8 KEY_menu=0xD2;//进入时间设置状态
+*/
+const u8 KEY_0=0x08;
+const u8 KEY_1=0x88;
+const u8 KEY_2=0x48;
+const u8 KEY_3=0xc8;
+const u8 KEY_4=0x28;
+const u8 KEY_5=0xa8;
+const u8 KEY_6=0x68;
+const u8 KEY_7=0xe8;
+const u8 KEY_8=0x18;
+const u8 KEY_9=0x98;
+const u8 KEY_up=0xa0;
+const u8 KEY_down=0x60;
+const u8 KEY_left=0xe0;
+const u8 KEY_right=0x10;
+const u8 KEY_OK=0x20;
+const u8 KEY_EXIT=0xc0;
+const u8 KEY_menu=0x40;//进入时间设置状态
 
 
 
@@ -95,25 +99,6 @@ void RTC_IRQHandler(void)
 	    RTC_WaitForLastTask();
 	  }
 }
-
-
-//【*】注意事项：
-//在bsp_rtc.h文件中：
-
-//1.可设置宏USE_LCD_DISPLAY控制是否使用LCD显示
-//2.可设置宏RTC_CLOCK_SOURCE_LSI和RTC_CLOCK_SOURCE_LSE控制使用LSE晶振还是LSI晶振
-
-//3.STM32的LSE晶振要求非常严格，同样的电路、板子批量产品时总有些会出现问题。
-//  本实验中默认使用LSI晶振。
-//  
-//4.！！！若希望RTC在主电源掉电后仍然运行，需要给开发板的电池槽安装钮扣电池，
-//  ！！！且改成使用外部晶振模式RTC_CLOCK_SOURCE_LSE
-//  钮扣电池型号：CR1220
-/**
-  * @brief  主函数
-  * @param  无  
-  * @retval 无
-  */
 
 
 
@@ -348,7 +333,6 @@ void SetTime(u8 key,struct rtc_time *tm)
 
 
 
-//正点原子开发板的  RTC使用外部晶振  不能工作？
 
 int main()
 {		
@@ -361,8 +345,17 @@ int main()
 	
 	status=Status_Normal;
 	
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); //设置NVIC中断分组2:2位抢占优先级，2位响应优先级
-	delay_init();	    	 //延时函数初始化	  
+	
+	 NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置NVIC中断分组2:2位抢占优先级，2位响应优先级
+	
+	 if(SysTick_Config(SystemCoreClock/1000))	 	/* 1ms */
+	 { 
+		/* Capture error */ 
+		 while (1);
+	 }
+	 LED_Init();
+	
+	//delay_init();	    	 //延时函数初始化	  
 	
 	uart_init(115200);	 //串口初始化为115200
 	KEY_Init(); 
@@ -385,6 +378,13 @@ int main()
 	
 	  while (1)
 	  {
+          
+		if(led_time_count_tmp==0)
+		{
+			led_time_count_tmp=led_time_count;
+			LED0=!LED0;
+            LED1=!LED0;
+        }
 		  
 			key=Remote_Scan();
 			if(key) //此时有按键按下
