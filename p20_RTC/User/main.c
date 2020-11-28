@@ -42,6 +42,7 @@ const u8 KEY_OK=0xA8;
 const u8 KEY_EXIT=0x38;
 const u8 KEY_menu=0xD2;//进入时间设置状态
 */
+
 const u8 KEY_0=0x08;
 const u8 KEY_1=0x88;
 const u8 KEY_2=0x48;
