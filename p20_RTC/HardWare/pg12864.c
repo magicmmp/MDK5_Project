@@ -82,8 +82,8 @@ const u8 Hilight[7][2]={{0,0},{17,4},{23,2},{27,2},{48,2},{51,2},{54,2}};
 '.',0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0C,0x0C,0x00,0x00,0x00,0x00,
 '?',0x00,0x1C,0x20,0x20,0x21,0x22,0x1C,0x00,0x00,0x00,0x00,0xEC,0x0C,0x00,0x00,0x00};
   
-
-
+//字模的每个字节数据表示一条竖线的8个点。字节高位表示的点在上面。
+//前16个字节表示一个汉字的上半部分。
   const  struct Cnchar Hanzi[]={
 	 
 "年", 0x00,0x04,0x08,0x33,0xE2,0x22,0x22,0x3F,
@@ -344,46 +344,86 @@ void WriteEn(u8 kn,u8 x,u8 y,u8 *cn)
 }
 
   void WriteCn(u8 kn,u8 x,u8 y,u8 *cn)
-   { u8 N,xn,n,x1,fn,fg,fg1,i,Lx;
-     fg=0;N=0;Lx=0;
-   if(y<7)
-    {n=(8-y)/2;xn=(128-x)/16;
-	    if(n>1)   n=(n-1)*8;
-		else      n=0;
-		n=n+xn;fg1=0;
-	  while(n&&(*cn != '\0'))
-    	{ if((Hanzi[N].Index[0]!= *cn)||(Hanzi[N].Index[1] != *(cn+1)))
-	       { if(!fg)
-		     {fn=N;fg=1;} 
-			  N=(N+1)%197;
-		     if(fn==N) n=0; }
+  { 
+		u8 N,xn,n,x1,fn,fg,fg1,i,Lx;
+    fg=0;
+		N=0;
+		Lx=0;
+    if(y<7)
+    {
+			n=(8-y)/2;
+			xn=(128-x)/16;
+	    if(n>1)   
+				n=(n-1)*8;
+			else      
+				n=0;
+			n=n+xn;
+			fg1=0;
+			while(n&&(*cn != '\0'))
+    	{ 
+				if((Hanzi[N].Index[0]!= *cn)||(Hanzi[N].Index[1] != *(cn+1)))
+	      { 
+					if(!fg)
+					{
+						fn=N;fg=1;
+					} 
+					N=(N+1)%197;
+		      if(fn==N) 
+						n=0; 
+				}
 	      if((Hanzi[N].Index[0]== *cn)&&(Hanzi[N].Index[1] == *(cn+1)))
-	       { if(x>113&&!fg1)
-		      { x=0;y=y+1;}
-			 if(x>113&&fg1)
-		      { x=0;y=y+2;}	 //??????????
-		     WriteCmdByteTo_12864(7-y+0xb0);
-	         x1=(x>>4)&0x0f;WriteCmdByteTo_12864(0x10 + x1);
-		     x1=x&0x0f;     WriteCmdByteTo_12864(0x00 + x1);
-			 if(Hilight[kn][0]==y/2*16+x/8)
-			    Lx=Hilight[kn][1];	
+	      { 
+					if(x>113&&!fg1)
+		      { 
+						x=0;
+						y=y+1;
+					}
+					if(x>113&&fg1)
+		      { 
+						x=0;
+						y=y+2;
+					}	 //??????????
+					WriteCmdByteTo_12864(7-y+0xb0);
+	        x1=(x>>4)&0x0f;
+					WriteCmdByteTo_12864(0x10 + x1);
+					x1=x&0x0f;     
+					WriteCmdByteTo_12864(0x00 + x1);
+					if(Hilight[kn][0]==y/2*16+x/8)
+						Lx=Hilight[kn][1];	
 	        for(i=0;i<32;i++)
-             { if(i==16)
-	           {WriteCmdByteTo_12864(6-y+0xb0);
-	            x1=x>>4&0x0f;WriteCmdByteTo_12864(0x10 + x1);
-		        x1=x&0x0f;     WriteCmdByteTo_12864(0x00 + x1);}
-                if(Lx)
-					WriteDataByteTo_12864(~Hanzi[N].Msk[i]);
-				else
-					WriteDataByteTo_12864(Hanzi[N].Msk[i]);}
-		        n--;cn=cn+2;N++;
-				if(Lx>1)Lx=Lx-2;
-				if(n) x=x+16;
-				else  
-				{WriteCmdByteTo_12864(0xb0);
-	             WriteCmdByteTo_12864(0x10);
-		         WriteCmdByteTo_12864(0x00);}
-				fg=0;fg1=1;}}}}
+          { 
+						if(i==16)
+	          {
+							WriteCmdByteTo_12864(6-y+0xb0);
+	            x1=x>>4&0x0f;
+							WriteCmdByteTo_12864(0x10 + x1);
+							x1=x&0x0f;     
+							WriteCmdByteTo_12864(0x00 + x1);
+						}
+            if(Lx)
+							WriteDataByteTo_12864(~Hanzi[N].Msk[i]);
+						else
+							WriteDataByteTo_12864(Hanzi[N].Msk[i]);
+					}
+					n--;
+					cn=cn+2;
+					N++;
+					if(Lx>1)
+						Lx=Lx-2;
+					if(n) 
+						x=x+16;
+					else  
+					{
+						WriteCmdByteTo_12864(0xb0);
+						WriteCmdByteTo_12864(0x10);
+						WriteCmdByteTo_12864(0x00);
+					}
+					fg=0;
+					fg1=1;
+				}
+			}
+		}
+	}
 
 
 

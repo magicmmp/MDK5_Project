@@ -7,9 +7,10 @@
 
   <Targets>
     <Target>
-      <TargetName>Target 1</TargetName>
+      <TargetName>TFT_test</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -17,7 +18,7 @@
           <Vendor>STMicroelectronics</Vendor>
           <PackID>Keil.STM32F1xx_DFP.1.0.5</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
-          <Cpu>IROM(0x08000000,0x80000) IRAM(0x20000000,0x10000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
+          <Cpu>IRAM(0x20000000,0x10000) IROM(0x08000000,0x80000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
           <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F10x_512 -FS08000000 -FL080000 -FP0($$Device:STM32F103ZE$Flash\STM32F10x_512.FLM))</FlashDriverDll>
@@ -48,10 +49,10 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\Objects\</OutputDirectory>
-          <OutputName>EXTI_test</OutputName>
+          <OutputName>TFT_Driver_Code_test</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>1</CreateHexFile>
+          <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\Listings\</ListingPath>
@@ -323,8 +324,8 @@
             <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>0</uC99>
-            <uGnu>0</uGnu>
+            <uC99>1</uC99>
+            <uGnu>1</uGnu>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -337,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Libraries;.\User;..\Periph_Driver_For_All_Project\inc;.\SYSTEM\delay;.\SYSTEM\sys;.\SYSTEM\usart</IncludePath>
+              <IncludePath>.\HardWare;.\Libraries;.\SYSTEM;..\Periph_Driver_For_All_Project\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -401,31 +402,6 @@
               <FileType>2</FileType>
               <FilePath>.\Libraries\startup_stm32f10x_hd.s</FilePath>
             </File>
-            <File>
-              <FileName>stm32f10x.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Libraries\stm32f10x.h</FilePath>
-            </File>
-            <File>
-              <FileName>core_cm3.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Libraries\core_cm3.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_conf.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Libraries\stm32f10x_conf.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_it.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Libraries\stm32f10x_it.h</FilePath>
-            </File>
-            <File>
-              <FileName>system_stm32f10x.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Libraries\system_stm32f10x.h</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -439,27 +415,32 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>HardWare</GroupName>
+          <Files>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HardWare\led.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HardWare\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>font.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HardWare\font.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>SYSTEM</GroupName>
           <Files>
             <File>
-              <FileName>delay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\SYSTEM\delay\delay.c</FilePath>
-            </File>
-            <File>
               <FileName>sys.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\SYSTEM\sys\sys.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\SYSTEM\usart\usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>sys.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\SYSTEM\sys\sys.h</FilePath>
+              <FilePath>.\SYSTEM\sys.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -580,121 +561,6 @@
               <FileName>stm32f10x_wwdg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Periph_Driver_For_All_Project\src\stm32f10x_wwdg.c</FilePath>
-            </File>
-            <File>
-              <FileName>misc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\misc.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_adc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_adc.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_bkp.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_bkp.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_can.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_can.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_cec.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_cec.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_crc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_crc.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_dac.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_dac.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_dbgmcu.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_dbgmcu.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_dma.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_dma.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_exti.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_exti.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_flash.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_flash.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_fsmc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_fsmc.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_gpio.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_gpio.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_i2c.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_i2c.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_iwdg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_iwdg.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_pwr.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_pwr.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_rcc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_rcc.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_rtc.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_rtc.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_sdio.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_sdio.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_spi.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_spi.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_tim.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_tim.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_usart.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_usart.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_wwdg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Periph_Driver_For_All_Project\inc\stm32f10x_wwdg.h</FilePath>
             </File>
           </Files>
         </Group>
