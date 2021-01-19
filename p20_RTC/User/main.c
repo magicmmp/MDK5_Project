@@ -344,6 +344,9 @@ int main()
 	uint32_t BJ_TimeVar;
 	u8 buffer[17];//显示一行的内容
 	
+	
+	//SCB->VTOR = FLASH_BASE | 0x10000; /* Vector Table Relocation in Internal FLASH. */
+	
 	status=Status_Normal;
 	
 	

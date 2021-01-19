@@ -12,7 +12,10 @@ int main()
 
 	u8 x=0;
 	u8 lcd_id[64];			//存放LCD ID字符串
-	u32 i;
+	u32 i;;
+	
+	//SCB->VTOR = FLASH_BASE | 0x10000;
+	
 	
 	 NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置NVIC中断分组2:2位抢占优先级，2位响应优先级
 	

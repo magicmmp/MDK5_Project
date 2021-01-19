@@ -1,0 +1,2 @@
+初步完成p32_SYN480R_decode项目,解码无线模块SYN480R。
+配套发射信号项目p32_SYN480R_SendSignal_Taobao2014
