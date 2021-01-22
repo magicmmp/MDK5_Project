@@ -166,6 +166,7 @@ void GENERAL_TIM_INT_FUN(void)
 			if(tmpLow>850 && tmpLow<950)
 			if(tmpHigh>400 && tmpHigh<500) //收到 同步码头
 			{
+				KeyPressInfo.valid=0;//2021-1-22 add
 				KeyPressInfo.isPressing=1;
 				KeyPressInfo.nPulse=0;
 				KeyPressInfo.nLongPress=0;
@@ -173,6 +174,11 @@ void GENERAL_TIM_INT_FUN(void)
 			}
 			if(KeyPressInfo.isPressing)//如果正在按下按键
 			{
+				if(KeyPressInfo.nPulse<sizeof(HighTime)/2)
+				{
+					HighTime[KeyPressInfo.nPulse]=tmpHigh;
+					LowTime[KeyPressInfo.nPulse]=tmpLow;
+				}
 				HighTime[KeyPressInfo.nPulse]=tmpHigh;
 				LowTime[KeyPressInfo.nPulse]=tmpLow;
 				//同步码之后的32位表示 按键编码
