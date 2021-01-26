@@ -4,7 +4,7 @@
 #include "led.h"
 #include "sys.h"
 #include "stdlib.h"
-#include "timer2.h"
+#include "syn480r_sendSignal.h"
 #include "delay.h"
 
 int main()
@@ -18,33 +18,18 @@ int main()
 	u8 n;
 	
 	
-	
-	//SCB->VTOR = FLASH_BASE | 0x10000;
-	
 	 delay_init();
 	 NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置NVIC中断分组2:2位抢占优先级，2位响应优先级
 	
 	 KEY_Init();
 	 LED_Init();
 	 
-	 PB10_Init();
-	
-	//TIM2_PWM_Init();
-	
-	
-	
+	 syn480r_GPIO_Init();
 
-	 
-	 
-	
-	
-	
-	
 	 
 	
 	  while (1)
 	  {
-			//LED_RUN();
 			
 			key=KEY_Scan(0);	//得到键值
 			
@@ -65,8 +50,7 @@ int main()
 				{				 
 					
 					case KEY1_PRES:	//控制LED1翻转	 
-								//SimpleSignal();
-							 //NECSendByte();
+
 								for(index=0;index<256;index++)
 								{
 									dataToSend[index]=index+x;
@@ -91,8 +75,6 @@ int main()
 						break;
 				}
       }
-			//TestSignal();
-			//NECSendByte();
 	
 				
 				LED0=!LED0;

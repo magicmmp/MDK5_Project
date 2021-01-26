@@ -10,6 +10,7 @@
 #include "syn480_decode.h"
 #include "key.h"
 
+//用于打印字节到显示屏
 void printDataToArray(u8*buff,u8 data,u8 index)
 {
 	u8 ii;
@@ -175,7 +176,7 @@ int main()
 					printf("\r\n");
 						
 						for(i=0;i<nBytes;i++)
-							printf("%3d ",dataBuff[i]);
+							printf("% 3d",dataBuff[i]);
 						
 						printf("\r\n\r\n");
 				}

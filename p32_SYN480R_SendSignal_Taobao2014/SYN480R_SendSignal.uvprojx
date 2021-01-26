@@ -423,14 +423,14 @@
               <FilePath>.\HardWare\led.c</FilePath>
             </File>
             <File>
-              <FileName>timer2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\HardWare\timer2.c</FilePath>
-            </File>
-            <File>
               <FileName>key.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\HardWare\key.c</FilePath>
+            </File>
+            <File>
+              <FileName>syn480r_sendSignal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\HardWare\syn480r_sendSignal.c</FilePath>
             </File>
           </Files>
         </Group>
