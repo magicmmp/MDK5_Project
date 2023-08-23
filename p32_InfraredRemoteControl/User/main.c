@@ -57,7 +57,7 @@ int main(void)
 				isDebug=1;
 		}
 			
-		
+		isDebug=1;
 		if(isDebug)  //打印脉冲信息到串口	
 		{
 			WriteEn(0,4,(u8*)"Press Key0 to display here");	//显示按键次数
@@ -67,14 +67,13 @@ int main(void)
 		{
 			WriteEn(0,4,(u8*)"Press Key0 print to UART  ");	//显示按键次数	
 			
-			key=  Remote_Scan();		
+			key=  IR_Remote_to_key();		
 			if(key>0)
 			{
 				sprintf((char*)buffer,     "Key  Value: 0x%02X", key);
 				WriteEn(0,0,buffer);	//显示键值
-				while(KeyPressInfo.isPressing)
+				while(IR_info.isPressing)
 				{
-					sprintf((char*)buffer, "Long Press: %3d", KeyPressInfo.nLongPress);
 					WriteEn(0,2,buffer);	//显示键值
 				}
 				

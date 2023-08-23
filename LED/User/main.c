@@ -15,6 +15,7 @@
  {  	
 									
 	  GPIO_InitTypeDef  GPIO_InitStructure;
+	 
                     
 	 
 	
@@ -29,6 +30,7 @@
 
 	while(1)
 	{
+		
 		GPIO_ResetBits(GPIOD,GPIO_Pin_13);
 		GPIO_SetBits(GPIOG,GPIO_Pin_14);
 		Delay(3000000);

@@ -32,24 +32,27 @@
 // 捕获信号极性函数宏定义
 #define            GENERAL_TIM_OCxPolarityConfig_FUN           TIM_OC4PolarityConfig
 
-
 // 按键信息结构体声明
 typedef struct
 {   
 	uint8_t    valid;        //收到有效按键信息后变有效。访问后应手动设为无效
+  uint8_t    valid_tmp;      //记录当前是否按下有效的短按键，用于处理长按
+  uint8_t    flag_print;     //用于打印脉冲数据的标记
 	uint8_t    isPressing;   // 按键正在被按下，收到同步头置1，松开120mS后为0
-	uint16_t   nPulse;       //总共收到几个脉冲
-	uint16_t   nLongPress;   //计算长按的时间,长按会使该值不断增大
-	uint32_t   code;         //按键编码。4字节，由高字节到低字节：遥控器地址+地址反码+命令+命令反码
-}KeyPressInfoTypeDef;
+	uint8_t    nPulse;       //总共收到几个脉冲
+	uint8_t    nPulse_tmp;      //脉冲序号自增，只为每隔4个脉冲发送一次长按按键
+	uint8_t    IR_code[4];     //按键编码。4字节，由高字节到低字节：遥控器地址+地址反码+命令+命令反码
+ // uint32_t   IR_code_test;
+  uint8_t    idx;    //指示当前收到第几字节
+}Struct_IR_Info;
 
 
 
-extern KeyPressInfoTypeDef KeyPressInfo ;
+extern Struct_IR_Info IR_info ;
 
 
 void      Remote_Init(void);    	//红外传感器接收头引脚初始化
-uint8_t   Remote_Scan(void);       //遥控器键盘扫描
+uint8_t   IR_Remote_to_key(void);       //遥控器键盘扫描
 void 	  Remote_Debug(void);
 #endif
 

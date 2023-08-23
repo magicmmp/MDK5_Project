@@ -4,7 +4,7 @@
 
 
 // 按键信息结构体定义
-KeyPressInfoTypeDef KeyPressInfo  = {0,0,0,0,0};
+Struct_IR_Info IR_info;
 
 // 中断优先级配置
 static void GENERAL_TIM_NVIC_Config(void)
@@ -112,35 +112,43 @@ void Remote_Init(void)
 	GENERAL_TIM_Mode_Config();								 
 }
 
-//处理红外键盘
-//返回值:
-//	 0,没有任何按键按下
-//其他,按下的按键键值.
-//使用这个函数只能得知按下那个按键
-//而不能很好利用长按的功能
-u8 Remote_Scan(void)
+//把遥控器按键转换为机械按键效果
+uint8_t IR_Remote_to_key(void) 
 {
-	u8 tmp;
-	u8 keyCode=0;
-	if(KeyPressInfo.valid)//收到一个有效的按键信息
-	{
-		keyCode=(KeyPressInfo.code>>8) & 0xff;//命令
-		tmp=KeyPressInfo.code & 0xff;//命令反码
-		if(keyCode!=(u8)~tmp)
-			keyCode=0;
-		KeyPressInfo.valid=0;
-	}
-	return keyCode;	
+  uint8_t keyCode=0;
+  if(IR_info.valid)
+  {
+    IR_info.valid=0;
+    switch(IR_info.IR_code[2]) 
+    {
+      case 0x15:keyCode=2;;break; //机械按键有效性标记不能放外面，否则任何键都会触发有效
+      case 0x1D:keyCode=3;break;
+      case 0x11:keyCode=1;break;        
+    }   
+  }
+  return IR_info.IR_code[2];	
 }
 
 //static修饰的变量只能本文件内使用
 static uint8_t  Polarity_index=0;  //捕获边沿设置，下降沿0或上升沿1	
 const  uint16_t PolaritySelect[2]={TIM_ICPolarity_Falling,TIM_ICPolarity_Rising};
-static uint16_t HighTime[200];//用于记录脉冲的高电平的时长，单位为10uS
-static uint16_t LowTime[200]; //用于记录脉冲的低电平的时长，单位为10uS
+static uint16_t HighTime[50];//用于记录脉冲的高电平的时长，单位为10uS
+static uint16_t LowTime[50]; //用于记录脉冲的低电平的时长，单位为10uS
 static uint16_t tmpHigh;//存放高电平时间的临时变量
 static uint16_t tmpLow; //存放低电平时间的临时变量
-
+/**
+typedef struct
+{   
+	uint8_t    valid;        //收到有效按键信息后变有效。访问后应手动设为无效
+  uint8_t    valid_tmp;      //记录当前是否按下有效的短按键，用于处理长按
+  uint8_t    flag_print;     //用于打印脉冲数据的标记
+	uint8_t    isPressing;   // 按键正在被按下，收到同步头置1，松开120mS后为0
+	uint8_t    nPulse;       //总共收到几个脉冲
+	uint8_t    nPulse_tmp;      //脉冲序号自增，只为每隔4个脉冲发送一次长按按键
+	uint8_t    IR_code[4];     //按键编码。4字节，由高字节到低字节：遥控器地址+地址反码+命令+命令反码
+  uint8_t    idx;    //指示当前收到第几字节
+}Struct_IR_Info;
+**/
 
 //定时器4中断服务程序	 
 void GENERAL_TIM_INT_FUN(void)
@@ -166,37 +174,55 @@ void GENERAL_TIM_INT_FUN(void)
 			if(tmpLow>850 && tmpLow<950)
 			if(tmpHigh>400 && tmpHigh<500) //收到 同步码头
 			{
-				KeyPressInfo.valid=0;//2021-1-22 add
-				KeyPressInfo.isPressing=1;
-				KeyPressInfo.nPulse=0;
-				KeyPressInfo.nLongPress=0;
-				KeyPressInfo.code=0;
+				IR_info.valid=0;//2021-1-22 add
+				IR_info.isPressing=1;
+				IR_info.nPulse=0; //为了显示脉冲长度数据而记录时间有几个脉冲
+        IR_info.nPulse_tmp=0; //为了长按时每隔4次发送一次长按按键
+				IR_info.valid_tmp=0;
+				IR_info.IR_code[0]=0;
+        IR_info.IR_code[1]=0;
+        IR_info.IR_code[2]=0;
+        IR_info.IR_code[3]=0;
+        IR_info.idx=0;
+        IR_info.flag_print=0;
 			}
-			if(KeyPressInfo.isPressing)//如果正在按下按键
+			if(IR_info.isPressing)//如果正在按下按键
 			{
-				if(KeyPressInfo.nPulse<sizeof(HighTime)/2)
+				//同步码之后的32位表示 4字节按键编码：地址码、地址码反码、命令码、命令码反码
+				if(IR_info.nPulse>0 && IR_info.nPulse<33)
 				{
-					HighTime[KeyPressInfo.nPulse]=tmpHigh;
-					LowTime[KeyPressInfo.nPulse]=tmpLow;
+          IR_info.IR_code[IR_info.idx]>>=1;
+          //注意：tmpHigh >=128应该写成：tmpHigh & 0xff80。不能写成tmpHigh&0xff10，否则出错。 2023-8-23
+					if(tmpHigh & 0xff80)  //560us对应56，1600us对应160，可以这样判断：tmpHigh&0xff80。相当于tmpHigh>=128
+          {
+						IR_info.IR_code[IR_info.idx]|=0x80;
+          }
+          if(!(IR_info.nPulse&0x7))
+            IR_info.idx++;    //保存到下一个字节
 				}
-				HighTime[KeyPressInfo.nPulse]=tmpHigh;
-				LowTime[KeyPressInfo.nPulse]=tmpLow;
-				//同步码之后的32位表示 按键编码
-				if(KeyPressInfo.nPulse>0 && KeyPressInfo.nPulse<33)
+        if(IR_info.valid_tmp)//实现长按功能,可不必记录总脉冲数，只需要用一个u8循环递增，即使自加溢出了也无所谓
+        {
+          if(!(IR_info.nPulse_tmp&0x3))  //IR_info.nPulse_tmp要大于32且被4整除
+          {
+            IR_info.valid=1; 
+          } 
+        }
+        if(IR_info.nPulse==32)  //已获得这个按键的编码（4字节信息）
+        {
+          if((IR_info.IR_code[2]^IR_info.IR_code[3])==0xff) //检测指令码的反码
+          {
+            IR_info.valid=1;
+            IR_info.valid_tmp=1;
+          }
+        }
+        if(IR_info.nPulse<sizeof(HighTime)>>1)
 				{
-					if(tmpHigh>100)
-						KeyPressInfo.code|=0x1;
-					if(KeyPressInfo.nPulse<32)
-						KeyPressInfo.code<<=1;
+					HighTime[IR_info.nPulse]=tmpHigh;
+					LowTime[IR_info.nPulse]=tmpLow;
+          IR_info.nPulse++; //脉冲数加1，必须放在读码等语句后面
 				}
-				if(KeyPressInfo.nPulse==32)  //已获得这个按键的编码（4字节信息）
-					KeyPressInfo.valid=1;
-				
-				if(KeyPressInfo.nPulse>34)  //长按计时
-				{
-					KeyPressInfo.nLongPress=(KeyPressInfo.nPulse-33)>>1;
-				}
-				KeyPressInfo.nPulse++; //脉冲数加1
+			
+        IR_info.nPulse_tmp++;			
 			}			
 		}
 			
@@ -206,14 +232,14 @@ void GENERAL_TIM_INT_FUN(void)
 	}
 
 	//按键松开120mS，定时器TIM4就溢出了
-	if ( TIM_GetITStatus ( GENERAL_TIM, TIM_IT_Update) != RESET )               
+	if( TIM_GetITStatus ( GENERAL_TIM, TIM_IT_Update) != RESET )               
 	{	
-		
-		if(KeyPressInfo.isPressing)
+		if(IR_info.isPressing)
 		{
-			KeyPressInfo.isPressing=0;//按键松开了
+			IR_info.isPressing=0;//按键松开了
+      IR_info.flag_print=1;  //可以打印脉冲数据了
 		}
-			
+		IR_info.valid_tmp=0; //本次有效按键已经松开	
 		TIM_ClearITPendingBit ( GENERAL_TIM, TIM_FLAG_Update ); 	
 	}
 }
@@ -226,47 +252,35 @@ void GENERAL_TIM_INT_FUN(void)
 
 void Remote_Debug(void)
 {
-	int t=0,nextIndex;	
+	uint8_t i,tmp,t;	
 	
-	if(KeyPressInfo.valid)//收到一个有效的按键信息
+	if(IR_info.flag_print)//收到一个有效的按键信息
 	{
-		
-		printf("num= %-3d, 低电平= %-6d uS, 高电平= %-6d uS\r\n\r\n",0,LowTime[0]*10,HighTime[0]*10);
-		
-		for(t=1;t<=32;t++)
+    IR_info.flag_print=0;//按键信息已被使用
+		for(t=0;t<IR_info.nPulse;t++)
 		{
-			printf("num= %-3d, 低电平= %-6d uS, 高电平= %-6d uS\r\n",t,LowTime[t]*10,HighTime[t]*10);
+			printf("num= %3d, 低电平= %6d uS, 高电平= %6d uS\r\n",t,LowTime[t]*10,HighTime[t]*10);
+      if(t==0||t==32||t==33)
+        printf("\r\n");
 		}
-	
-		printf("\r\nnum= %-3d, 低电平= %-6d uS, 高电平= %-6d uS\r\n\r\n",33,LowTime[33]*10,HighTime[33]*10);
-		
-
-		nextIndex=0;
-		while(KeyPressInfo.isPressing)
-		for(t=nextIndex;t<KeyPressInfo.nLongPress;t++)
-		{
-			printf("长按中...\r\n");
-			printf("num= %-3d, 低电平= %-6d uS, 高电平= %-6d uS\r\n",t,LowTime[t*2+34]*10,HighTime[t*2+34]*10);
-			printf("num= %-3d, 低电平= %-6d uS, 高电平= %-6d uS\r\n",t,LowTime[t*2+35]*10,HighTime[t*2+35]*10);
-			nextIndex=t+1;
-		}
-		KeyPressInfo.valid=0;//按键信息已被使用
-		
-		printf("\r\n4字节按键编码： 0X%04X\r\n",KeyPressInfo.code);	
-		for(t=31;t>=0;t--)
-		{
-			if((KeyPressInfo.code>>t)&0x1)
-				printf("1");
-			else
-				printf("0");
-			
-			if(t%8==0)
-				printf("\r\n");
-		}
-		printf("\r\n\r\n");
-					
-	}	
-	
+    
+    printf("\r\n4字节按键编码：     0x%02X%02X%02X%02X\r\n",IR_info.IR_code[0],IR_info.IR_code[1],IR_info.IR_code[2],IR_info.IR_code[3]);
+		printf("\r\n");
+		for(i=0;i<4;i++)
+    {
+      tmp=IR_info.IR_code[i];
+      for(t=0;t<8;t++)
+      {
+        if(tmp&0x80)
+          printf("1");
+        else
+          printf("0");
+        tmp<<=1;
+      }
+      printf("\r\n");
+    }
+		printf("\r\n\r\n");		
+	}		
 }
 
 

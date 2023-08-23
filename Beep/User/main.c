@@ -29,7 +29,7 @@ int main(void)
     {
         GPIO_SetBits(GPIOA,GPIO_Pin_5); //PB.5 输出高
       
-        delay_us(500);
+        delay_us(1000);
       
         GPIO_ResetBits(GPIOA,GPIO_Pin_5); //输出 0，关闭蜂鸣器输出
         delay_us(1000);;

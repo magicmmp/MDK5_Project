@@ -38,8 +38,9 @@
 					LED1=!LED1;
 					break;
 				case KEY0_PRES:	//同时控制LED0,LED1翻转 
-					LED0=!LED0;
+					
 					LED1=!LED1;
+				  LED0=!LED1;
 					break;
 			}
 		}else delay_ms(10); 

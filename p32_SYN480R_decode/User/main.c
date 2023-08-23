@@ -54,9 +54,9 @@ int main()
 	 syn480_Init();
 	 LED_Init();
 	 KEY_Init();
-	LCD_Init();
-	POINT_COLOR=RED;
-	LCD_Clear(BLACK);
+	 LCD_Init();
+	 POINT_COLOR=RED;
+	 LCD_Clear(BLACK);
 	
 
 	 

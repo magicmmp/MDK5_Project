@@ -247,9 +247,6 @@ void TIM2_IRQHandler(void)
 		TIM_ClearITPendingBit ( TIM2, TIM_FLAG_Update ); 	
 	}
 	
-	
-	
-	
 }
 
 //²éÑ¯ÊÇ·ñ³ö´íÂë
