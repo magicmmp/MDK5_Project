@@ -153,7 +153,6 @@ typedef struct
 //定时器4中断服务程序	 
 void GENERAL_TIM_INT_FUN(void)
 {
-	
 	// 边沿捕获中断
 	if ( TIM_GetITStatus (GENERAL_TIM, GENERAL_TIM_IT_CCx ) != RESET)
 	{
@@ -185,6 +184,7 @@ void GENERAL_TIM_INT_FUN(void)
         IR_info.IR_code[3]=0;
         IR_info.idx=0;
         IR_info.flag_print=0;
+        
 			}
 			if(IR_info.isPressing)//如果正在按下按键
 			{
